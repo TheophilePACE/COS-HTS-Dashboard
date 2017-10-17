@@ -1,0 +1,9 @@
+{
+    "alwaysSell": true,
+    "minPrice": 2,
+    "alwaysBuy": false,
+    "maxPrice": 2,
+    "API_URL": "http://localhost:3001/api",
+    "JADE_PORT": 1099,
+    "CYCLE_TIME": 20000
+}

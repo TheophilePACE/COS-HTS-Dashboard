@@ -1,0 +1,16 @@
+.flex-container {
+    margin: auto;
+    width: 98vw;
+    background-color: rgba(235, 235, 235, 0.274);
+    justify-content: center;
+  }
+  
+  .flex-item {
+    display: inline-block;
+    background-color: rgba(100, 150, 237, 0.068);
+    margin: 0.2%;
+    justify-content: center;
+    /* height: auto */
+  
+  }
+  
