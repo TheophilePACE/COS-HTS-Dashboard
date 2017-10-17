@@ -174,8 +174,7 @@ class Dashboard extends Component {
     renderGrid(arrayToDisp) {
         return (<div className="flex-container">
             {arrayToDisp.map(element =>
-                (<div className="flex-item" key={element.dataId} ref={element.dataId}
-                    onClick={(e) => this.handleColClick(e, element.dataId)}>
+                (<div className="flex-item" key={element.dataId} ref={element.dataId}>
                     <h2 > {element.dataId} </h2>
 
                     {!this.state.graphClicked ?

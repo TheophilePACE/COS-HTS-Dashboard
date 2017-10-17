@@ -14,7 +14,7 @@ class App extends Component {
     super(props)
     this.state = {
       displayDashboard: false, //true when settings are validated at least once
-      defaultSettings: {}
+      APISettings: {}
     }
 
   }
@@ -35,7 +35,7 @@ class App extends Component {
 
   async componentWillMount() {
     const resp = await getSettings(API_URL)
-    this.setState({ defaultSettings: resp.settings })
+    this.setState({ APISettings: resp.settings })
   }
 
   render() {
@@ -57,16 +57,16 @@ class App extends Component {
               API_URL={API_URL} />
             <SettingsForm
               updateSettings={(settings) => { this.updateSettings(settings) }}
-              settings={this.state.defaultSettings} />
+              settings={this.state.APISettings} />
           </div>
-        ) : (JSON.stringify(this.state.defaultSettings) !== "{}") ? (
+        ) : (JSON.stringify(this.state.APISettings) !== "{}") ? (
           <div className="main">
             <h1 className='App-intro'>
               Validate the settings before launching the system :
               </h1>
             <SettingsForm
               updateSettings={(settings) => { this.updateSettings(settings) }}
-              settings={this.state.defaultSettings}
+              settings={this.state.APISettings}
             />
           </div>
 
