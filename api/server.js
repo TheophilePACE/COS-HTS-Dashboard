@@ -22,6 +22,7 @@ const dbConnector = require('./dbConnection')
 const consumptionApi = require('./routes/consumptionApi')
 const priceApi = require('./routes/priceApi')
 const settingsApi = require('./routes/settingsApi')
+const resetDBApi = require('./routes/resetDB')
 const { testInsertions } = require('./testInsertions')
 
 // now we should configure the API to use bodyParser and look for
@@ -57,6 +58,7 @@ router.get('/', (req, res) => {
 consumptionApi(router)
 priceApi(router)
 settingsApi(router, env.PATH_SETTINGS, env.PATH_DEFAULT_SETTINGS)
+resetDBApi(router, env.API_URL + ":" + env.API_PORT)
 // starts the server and listens for requests
 function startServer() {
     dbConnector(env.URL_DB)
@@ -64,25 +66,10 @@ function startServer() {
             app.listen(env.API_PORT, () => {
                 console.log(`api running on port ${env.API_PORT}`)
                 console.log(`environnement: ${JSON.stringify(env, null, 2)}`)
-                const bodyReq = {
-                    method: 'delete',
-                    body: JSON.stringify({ all: true }),
-                    headers: { 'Content-Type': 'application/json' }
-                }
-                fetch(env.API_URL + ":" + env.API_PORT + "/api/prices", bodyReq)
-                    .then(res => res.json())
-                    .then(json => console.log(json))
-                    .catch(err => {
-                        console.error('fetch error : ' + err)
-                    })
-
-                fetch(env.API_URL + ":" + env.API_PORT + "/api/consumptions", bodyReq)
-                    .then(res => res.json())
-                    .then(json => console.log(json))
-                    .catch(err => {
-                        console.error('fetch error : ' + err)
-                    })
             })
+            fetch(env.API_URL + ":" + env.API_PORT + "/api/resetDB")
+                .then(res => res.json()).then(json => console.log(json))
+                .catch(err => console.log(err))
         })
         .catch((err) => {
             console.log(err)

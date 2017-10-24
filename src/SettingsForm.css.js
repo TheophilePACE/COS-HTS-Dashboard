@@ -23,9 +23,8 @@ export default {
         margin: '1vw',
         borderRadius: '1vw',
         padding: "1vw",
-        align: 'top',
-        maxWidth: '30vw',
-        minWidth: '400px',
+        width: '30vw',
+        verticalAlign: 'top'
 
 
     },

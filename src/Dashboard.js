@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { Line, Pie, Bar } from 'react-chartjs-2'
+import { Line } from 'react-chartjs-2'
 import hash from 'md5'
 import './Dashboard.css'
 import { defaults } from 'react-chartjs-2';
 
+const tile = { width: '40vw', height: 'auto' }
 // Disable animating charts by default.
 defaults.global.animation = false;
 
@@ -11,7 +12,7 @@ class Dashboard extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            getConsumption: props.getConsumption, sizeOfGraphs: props.sizeOfGraphs,
+            getConsumption: props.getConsumption, sizeOfGraphs: props.sizeOfGraphs, CYCLE_TIME: props.CYCLE_TIME,
             getPrice: props.getPrice, API_URL: props.API_URL,
             pricePaid: {}, lastNegotiation: {},
             priceBuyingData: {}, priceSellingData: {}, formatedConsumptions: [],
@@ -146,11 +147,10 @@ class Dashboard extends Component {
     }
     componentWillMount() {
         this.fetchAll().then((allData) => {
-            console.log("[Dashboard] All data fetched")
             this.formatAll(allData)
         })
             .then(() => {
-                setTimeout(() => this.componentWillMount(), 5000)
+                setTimeout(() => this.componentWillMount(), Math.max(1000, this.state.CYCLE_TIME / 2))
             })
     }
 
@@ -163,63 +163,61 @@ class Dashboard extends Component {
         return `rgb(${red},${green},${blue})`
     }
     render() {
-        console.log(`[Dashboard] will render. State :`)
-        console.log(this.state)
         return (
             <div className='Dashboard'>
                 <div className="flex-container">
-                    <div className="flex-item" key={"priceBuyingData"} ref={"priceBuyingData"}>
+                    <div className="flex-item" key={"pricePaid"} ref={"pricePaid"}>
+                        <h2 > Global Financial Balance </h2>
+                        <label>in AUD </label>
+                        <div style={tile}
+                            ref={(ref) => { this["canvaspricePaid"] = ref }}>
+                            Financial balance = <b> {String(Math.round(this.state.pricePaid.balance) / 100)}</b> <br />
+                            Money earned = <b>{String(Math.round(this.state.pricePaid.amountEarned) / 100)}</b> <br />
+                            Money paid = <b>{String(Math.round(this.state.pricePaid.amountPaid) / 100)}</b> <br />
+                            At time =  <b>{String(this.state.pricePaid.time)}</b> <br />
+                        </div>
+                    </div>
+                    <div className="flex-item" key={"lastNegotiation"} ref={"lastNegotiation"} style={tile}>
+                        <h2 > Last negotiation result </h2>
+                        <div style={{
+                            backgroundColor: (this.state.lastNegotiation.quantity > 0) ? "red" : "green"
+                        }}
+                            ref={(ref) => { this["canvaslastNegotiation"] = ref }}>
+                            Financial balance = <b>{String(Math.round(this.state.lastNegotiation.financialBalance) / 100)}</b> <i>   in AUD </i> <br />
+                            Price = <b>{String(this.state.lastNegotiation.price)}</b> <i>  in c/kWh</i> <br />
+                            Quantity = <b>{String(this.state.lastNegotiation.quantity)}</b> <i>   in kWh</i><br />
+                            To retailer : <b>{String(this.state.lastNegotiation.retailerId)}</b> <br />
+                            At time =  <b>{String(this.state.lastNegotiation.time)}</b> <br />
+                        </div>
+                    </div>
+                    <div style={tile} className="flex-item" key={"priceBuyingData"} ref={"priceBuyingData"}>
                         <h2 > Negotiated Buying Price </h2>
                         <label> in (c/kWh) for each hour</label>
                         <Line data={this.state["priceBuyingData"]} redraw
                             width={500} height={250}
-                            ref={(ref) => { this["canvas" + "priceBuyingData"] = ref }} />
+                            ref={(ref) => { this["canvaspriceBuyingData"] = ref }} />
                     </div>
-                    <div className="flex-item" key={"priceSellingData"} ref={"priceSellingData"}>
+                    <div className="flex-item" key={"priceSellingData"} ref={"priceSellingData"} style={tile}>
                         <h2 > Negotiated Selling Price </h2>
                         <label> in (c/kWh) for each hour</label>
                         <Line data={this.state["priceSellingData"]} redraw
                             width={500} height={250}
-                            ref={(ref) => { this["canvas" + "priceSellingData"] = ref }} />
+                            ref={(ref) => { this["canvaspriceSellingData"] = ref }} />
                     </div>
-                    <div className="flex-item" key={"pricePaid"} ref={"pricePaid"}>
-                        <h2 > Global Financial Balance </h2>
-                        <label>in AUD </label>
-                        <div
-                            width={500} height={250}
-                            ref={(ref) => { this["canvas" + "pricePaid"] = ref }}>
-                            Financial balance = <b>{Math.round(this.state.pricePaid.balance) / 100}</b> <br />
-                            Money earned = <b>{Math.round(this.state.pricePaid.amountEarned) / 100}</b> <br />
-                            Money paid = <b>{Math.round(this.state.pricePaid.amountPaid) / 100}</b> <br />
-                            At time =  <b>{this.state.pricePaid.time}</b> <br />
-                        </div>
-                    </div>
-                    <div className="flex-item" key={"lastNegotiation"} ref={"lastNegotiation"}>
-                        <h2 > Last negotiation result </h2>
-                        <div
-                            style={{ backgroundColor: (this.state.lastNegotiation.quantity > 0) ? "red" : "green" }}
-                            width={500} height={250}
-                            ref={(ref) => { this["canvas" + "lastNegotiation"] = ref }}>
-                            Financial balance = <b>{Math.round(this.state.lastNegotiation.financialBalance) / 100}</b> <i>   in AUD </i> <br />
-                            Price = <b>{this.state.lastNegotiation.price}</b> <i>  in c/kWh</i> <br />
-                            Quantity = <b>{this.state.lastNegotiation.quantity}</b> <i>   in kWh</i><br />
-                            To retailer : <b>{this.state.lastNegotiation.retailerId}</b> <br />
-                            At time =  <b>{this.state.lastNegotiation.time}</b> <br />
-                        </div>
-                    </div>
-                    <div className="flex-item" key={"energyConsumptions"} ref={"energyConsumptions"}>
+
+                    <div className="flex-item" key={"energyConsumptions"} ref={"energyConsumptions"} style={tile}>
                         <h2 > Consumption of energy </h2>
                         <label> in kWh for each hour</label>
                         <Line data={this.state["energyConsumptions"]} redraw
                             width={500} height={250}
-                            ref={(ref) => { this["canvas" + "energyConsumptions"] = ref }} />
+                            ref={(ref) => { this["canvasenergyConsumptions"] = ref }} />
                     </div>
-                    <div className="flex-item" key={"energyBalance"} ref={"energyBalance"}>
+                    <div className="flex-item" key={"energyBalance"} ref={"energyBalance"} style={tile}>
                         <h2 > Balance of energy in the home system </h2>
                         <label> in kWh for each hour</label>
                         <Line data={this.state["energyBalance"]} redraw
                             width={500} height={250}
-                            ref={(ref) => { this["canvas" + "energyBalance"] = ref }} />
+                            ref={(ref) => { this["canvasenergyBalance"] = ref }} />
                     </div>
                 </div>
             </div>
