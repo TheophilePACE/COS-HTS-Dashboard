@@ -52,7 +52,7 @@ class Dashboard extends Component {
             else
                 pv.amountEarned += (cv.quantity * cv.price)
             pv.balance += (cv.quantity * cv.price)
-            pv.time = (cv.time > pv.time) ? cv.time : pv.time
+            pv.time = Math.max(cv.time, pv.time)
             return pv
         }, { amountPaid: 0, amountEarned: 0, balance: 0, time: 0 })
     }

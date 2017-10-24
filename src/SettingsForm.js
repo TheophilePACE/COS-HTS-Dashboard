@@ -185,8 +185,14 @@ class SettingsForm extends Component {
                             fullWidth
                         />
                     </div>
+                    <div style={style.inputDiv}>
+                        <h3> SUBMIT </h3>
+                        <button style={{ display: 'inline-block', width: '10vw', height: '7vh', margin: '2', backgroundColor: 'light-blue' }} onClick={(e) => this.updateSettings(e)}> Update my settings </button>
+                        <button style={{ display: 'inline-block', width: '10vw', height: '7vh', backgroundColor: 'red', border: '3px solid rgb(135, 4, 0)', margin: '2' }} onClick={() => this.props.resetDB()}>RESET THE SYSTEM </button>
+
+                    </div>
                 </div>
-                <button onClick={(e) => this.updateSettings(e)}> Update my settings </button>
+
             </form>
         );
     }

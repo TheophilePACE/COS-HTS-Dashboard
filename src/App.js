@@ -35,13 +35,19 @@ class App extends Component {
     this.setState({ APISettings })
   }
 
+  resetDB() {
+    fetch(API_URL + "/resetDB")
+      .then(res => res.json()).then(json => console.log(json))
+      .catch(err => console.log(err))
+  }
+
   render() {
     console.log(`[App-js-render] will render. State :`)
     console.log(this.state)
     return (
       <div className='App'>
         <header className='App-header'>
-          <h1 className='App-title'>Home Energy Trading System</h1>
+          <h1 style={{ display: 'inline-block' }} className='App-title'>Home Energy Trading System</h1>
         </header>
         {(JSON.stringify(this.state.APISettings) !== "{}" && this.state.APISettings !== undefined) ? (
           <div className="main">
@@ -55,7 +61,8 @@ class App extends Component {
               CYCLE_TIME={this.state.APISettings.CYCLE_TIME} />
             <SettingsForm
               updateSettings={(settings) => { this.updateSettings(settings) }}
-              settings={this.state.APISettings} />
+              settings={this.state.APISettings}
+              resetDB={this.resetDB} />
           </div>
         ) : (
             <div>
