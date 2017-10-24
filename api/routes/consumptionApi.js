@@ -34,6 +34,7 @@ const consumptionApi = (router) =>
                 consumption.applianceId = req.body.applianceId
                 consumption.quantity = req.body.quantity
                 consumption.time = req.body.time
+                consumption.consumptionType = req.body.consumptionType
 
                 consumption.save((err) => {
                     if (err) {

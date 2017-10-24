@@ -7,7 +7,8 @@ const Schema = mongoose.Schema
 const ConsumptionsSchema = new Schema({
     applianceId: String,
     quantity: Number,
-    time: Number
+    time: Number,
+    consumptionType: String
 })
 // export our module to use in server.js
 module.exports = mongoose.model('Consumption', ConsumptionsSchema)
