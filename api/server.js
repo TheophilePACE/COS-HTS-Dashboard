@@ -8,15 +8,14 @@ const reqEnvVar = (...envVars) => {
 }
 // first we import our dependencies…
 const express = require('express')
-const mongoose = require('mongoose')
-mongoose.Promise = global.Promise
 const bodyParser = require('body-parser')
+const fetch = require('node-fetch')
 // and create our instances
 const app = express()
 const router = express.Router()
 // set our port to either a predetermined port number if you have set
 // it up, or 3001
-const env = reqEnvVar("API_PORT", "PATH_SETTINGS", "PATH_DEFAULT_SETTINGS", "URL_DB")
+const env = reqEnvVar("API_PORT", "PATH_SETTINGS", "PATH_DEFAULT_SETTINGS", "URL_DB", "API_URL")
 
 
 const dbConnector = require('./dbConnection')
@@ -59,11 +58,36 @@ consumptionApi(router)
 priceApi(router)
 settingsApi(router, env.PATH_SETTINGS, env.PATH_DEFAULT_SETTINGS)
 // starts the server and listens for requests
-dbConnector(env.URL_DB)
-    .then((success) => {
-        app.listen(env.API_PORT, () => {
-            console.log(`api running on port ${env.API_PORT}`)
-            console.log(`environnement: ${JSON.stringify(env, null, 2)}`)
-            testInsertions('http://localhost:3001/api')
+function startServer() {
+    dbConnector(env.URL_DB)
+        .then((success) => {
+            app.listen(env.API_PORT, () => {
+                console.log(`api running on port ${env.API_PORT}`)
+                console.log(`environnement: ${JSON.stringify(env, null, 2)}`)
+                const bodyReq = {
+                    method: 'delete',
+                    body: JSON.stringify({ all: true }),
+                    headers: { 'Content-Type': 'application/json' }
+                }
+                fetch(env.API_URL + ":" + env.API_PORT + "/api/prices", bodyReq)
+                    .then(res => res.json())
+                    .then(json => console.log(json))
+                    .catch(err => {
+                        console.error('fetch error : ' + err)
+                    })
+
+                fetch(env.API_URL + ":" + env.API_PORT + "/api/consumptions", bodyReq)
+                    .then(res => res.json())
+                    .then(json => console.log(json))
+                    .catch(err => {
+                        console.error('fetch error : ' + err)
+                    })
+            })
         })
-    })
+        .catch((err) => {
+            console.log(err)
+            console.log("NOT READY YET")
+            setTimeout(startServer, 2000)
+        })
+}
+startServer() 

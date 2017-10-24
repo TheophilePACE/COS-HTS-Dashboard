@@ -1,9 +1,11 @@
 {
-    "alwaysSell": true,
-    "minPrice": 2,
-    "alwaysBuy": false,
-    "maxPrice": 2,
     "API_URL": "http://localhost:3001/api",
     "JADE_PORT": 1099,
-    "CYCLE_TIME": 20000
+    "CYCLE_TIME": 20000,
+    "yearlyConsumption": 4026.1,
+    "consumptionGearing": 0.64,
+    "generationCapacity": 2.5,
+    "roundsLimit": 25,
+    "maxBuyingPrice": 8,
+    "minSellingPrice": 15
 }

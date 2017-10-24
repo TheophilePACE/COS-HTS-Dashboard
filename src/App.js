@@ -34,8 +34,8 @@ class App extends Component {
   }
 
   async componentWillMount() {
-    const resp = await getSettings(API_URL)
-    this.setState({ APISettings: resp.settings })
+    const APISettings = await getSettings(API_URL)
+    this.setState({ APISettings })
   }
 
   render() {
@@ -59,7 +59,7 @@ class App extends Component {
               updateSettings={(settings) => { this.updateSettings(settings) }}
               settings={this.state.APISettings} />
           </div>
-        ) : (JSON.stringify(this.state.APISettings) !== "{}") ? (
+        ) : (JSON.stringify(this.state.APISettings) !== "{}" && this.state.APISettings !== undefined) ? (
           <div className="main">
             <h1 className='App-intro'>
               Validate the settings before launching the system :

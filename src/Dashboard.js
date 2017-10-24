@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import { Line, Pie, Bar } from 'react-chartjs-2'
 import hash from 'md5'
 import './Dashboard.css'
+import { defaults } from 'react-chartjs-2';
+
+// Disable animating charts by default.
+defaults.global.animation = false;
 
 class Dashboard extends Component {
     constructor(props) {
@@ -9,6 +13,7 @@ class Dashboard extends Component {
         this.state = {
             getConsumption: props.getConsumption, sizeOfGraphs: props.sizeOfGraphs,
             getPrice: props.getPrice, API_URL: props.API_URL,
+            pricePaid: {}, lastNegotiation: {},
             accountData: {}, consumptionData: {}, priceData: {},
             balanceData: {}, globalBalance: {}, financialBalance: {},
             applianceBalance: {}, balanceAppliancesProduction: {}, balanceAppliancesConsumption: {},
@@ -20,19 +25,17 @@ class Dashboard extends Component {
         const allPrices = this.state.getPrice(this.state.API_URL)
         return Promise.all([allConsumptions, allPrices])
     }
+
     formatPrice(data) {
-        return data.reduce((pv, cv) => {
-            let retailer = pv.datasets.find(e => e.label === cv.retailerId)
-            if (!Boolean(retailer))//not found
-            {
-                pv.datasets.push({ label: cv.retailerId, data: [], borderColor: this.makeColor(cv.retailerId) })
-                retailer = pv.datasets.find(e => e.label === cv.retailerId)
-            }
-            retailer.data[parseInt(cv.time, 10)] = cv.price
-            return pv
+
+        return data.reduce((accumulator, cv) => {
+            accumulator.labels.push(cv.time)
+            accumulator.datasets[0].data.push(cv.price)
+            return accumulator
         },
-            { labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], datasets: [] })
+            { labels: [], datasets: [{ label: 'Negotiated Price', data: [], }] })
     }
+
     formatBalance(consumptionDataset, reducer = () => true) {
         if (consumptionDataset.hasOwnProperty('datasets') && consumptionDataset.hasOwnProperty('labels')) {
             const filteredDatasets = consumptionDataset.datasets.filter(dc => reducer(dc.data.reduce((pv, cv) => pv + cv, 0)))
@@ -53,8 +56,33 @@ class Dashboard extends Component {
         }
     }
     formatPricePaid(priceDataset) {
-        //TODO: IMPLEMENT ME
-        return priceDataset
+        return priceDataset.reduce((pv, cv) => {
+            if (cv.quantity > 0)
+                pv.amountPaid += (cv.quantity * cv.price)
+            else
+                pv.amountEarned += (cv.quantity * cv.price)
+            pv.balance += (cv.quantity * cv.price)
+            pv.time = (cv.time > pv.time) ? cv.time : pv.time
+            return pv
+        }, { amountPaid: 0, amountEarned: 0, balance: 0, time: 0 })
+    }
+    formatLastNegotiation(priceDataset) {
+        const lastNegotiation = priceDataset[priceDataset.length - 1]
+        if (!lastNegotiation)
+            return {
+                quantity: 0,
+                time: 0,
+                price: 0,
+                retailerId: 0,
+                financialBalance: 0
+            }
+        return {
+            quantity: lastNegotiation.quantity,
+            time: lastNegotiation.time,
+            price: lastNegotiation.price,
+            retailerId: lastNegotiation.retailerId,
+            financialBalance: (lastNegotiation.price * lastNegotiation.quantity)
+        }
     }
     formatConsumption(data) {
         return data.reduce((pv, cv) => {
@@ -117,38 +145,47 @@ class Dashboard extends Component {
             return {}
         }
     }
-    computeFinancialBalance(globalBalance, priceDataset) {
-        const pricePaid = this.formatPricePaid(priceDataset)
-        return ({
-            labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            datasets: [
-                {
-                    label: 'Amount paid, $AUD',
-                    borderColor: 'rgb(65, 69, 76)',
-                    data: globalBalance.datasets[0].data.map(
-                        (energy, index) => energy * pricePaid.datasets[0].data[index]
-                    )
-                }
-            ]
-        })
+    // computeFinancialBalance(globalBalance, priceDataset) {
+
+    //     return ({
+    //         labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    //         datasets: [
+    //             {
+    //                 label: 'Amount paid, $AUD',
+    //                 borderColor: 'rgb(65, 69, 76)',
+    //                 data: globalBalance.datasets[0].data.map(
+    //                     (energy, index) => energy * pricePaid.datasets[0].data[index]
+    //                 )
+    //             }
+    //         ]
+    //     })
+    // }
+
+    formatAll(fetchResult) {
+        //sort prices and consumptions per time
+        const appliancesData = fetchResult[0].sort((a, b) => (a.time - b.time))
+        const retailersData = fetchResult[1].sort((a, b) => (a.time - b.time))
+        const priceData = this.formatPrice(retailersData)
+        const pricePaid = this.formatPricePaid(retailersData)
+        const lastNegotiation = this.formatLastNegotiation(retailersData)
+        // const consumptionData = this.formatConsumption(appliancesData)
+        // const balanceData = this.formatBalance(consumptionData)
+        // const balanceAppliancesProduction = this.formatBalance(consumptionData, x => x > 0)
+        // const balanceAppliancesConsumption = this.formatBalance(consumptionData, x => x <= 0)
+        // const globalBalance = this.formatGlobalBalance(consumptionData)
+        // const financialBalance = this.computeFinancialBalance(globalBalance, priceData)
+        // const applianceBalance = this.formatApplianceBalance(consumptionData)
+        // console.log({ priceData, consumptionData, balanceData, globalBalance, financialBalance, applianceBalance, balanceAppliancesProduction, balanceAppliancesConsumption })
+        this.setState({ priceData, pricePaid, lastNegotiation }) // consumptionData, balanceData, globalBalance, financialBalance, applianceBalance, balanceAppliancesProduction, balanceAppliancesConsumption })
     }
     componentWillMount() {
         this.fetchAll().then((allData) => {
             console.log("[Dashboard] All data fetched")
-            const appliancesData = allData[0]
-            const retailersData = allData[1]
-            const priceData = this.formatPrice(retailersData)
-            const consumptionData = this.formatConsumption(appliancesData)
-            const balanceData = this.formatBalance(consumptionData)
-            const balanceAppliancesProduction = this.formatBalance(consumptionData, x => x > 0)
-            const balanceAppliancesConsumption = this.formatBalance(consumptionData, x => x <= 0)
-            const globalBalance = this.formatGlobalBalance(consumptionData)
-            const financialBalance = this.computeFinancialBalance(globalBalance, priceData)
-            const applianceBalance = this.formatApplianceBalance(consumptionData)
-            this.setState({ priceData, consumptionData, balanceData, globalBalance, financialBalance, applianceBalance, balanceAppliancesProduction, balanceAppliancesConsumption })
-
-
+            this.formatAll(allData)
         })
+            .then(() => {
+                setTimeout(() => this.componentWillMount(), 5000)
+            })
     }
 
     makeColor(string) {
@@ -160,42 +197,74 @@ class Dashboard extends Component {
         return `rgb(${red},${green},${blue})`
     }
 
-    makeToDisplay() {
-        const toDisplay = []
-        toDisplay.push({ dataId: 'financialBalance', display: Line })
-        toDisplay.push({ dataId: 'globalBalance', display: Bar })
-        toDisplay.push({ dataId: 'priceData', display: Line })
-        toDisplay.push({ dataId: 'applianceBalance', display: Line })
-        toDisplay.push({ dataId: 'balanceAppliancesProduction', display: Pie })
-        toDisplay.push({ dataId: 'balanceAppliancesConsumption', display: Pie })
-        return toDisplay
-    }
+    // makeToDisplay() {
+    //     const toDisplay = []
+    //     toDisplay.push({ dataId: 'financialBalance', display: Line })
+    //     toDisplay.push({ dataId: 'globalBalance', display: Bar })
+    //     toDisplay.push({ dataId: 'priceData', display: Line, title: 'Negotiated Price' })
+    //     toDisplay.push({ dataId: 'applianceBalance', display: Line })
+    //     toDisplay.push({ dataId: 'balanceAppliancesProduction', display: Pie })
+    //     toDisplay.push({ dataId: 'balanceAppliancesConsumption', display: Pie })
+    //     return toDisplay
+    // }
 
-    renderGrid(arrayToDisp) {
-        return (<div className="flex-container">
-            {arrayToDisp.map(element =>
-                (<div className="flex-item" key={element.dataId} ref={element.dataId}>
-                    <h2 > {element.dataId} </h2>
+    // renderGrid(arrayToDisp) {
+    //     return (<div className="flex-container">
+    //         {arrayToDisp.map(element =>
+    //             (<div className="flex-item" key={element.dataId} ref={element.dataId}>
+    //                 <h2 > {element.title} </h2>
 
-                    {!this.state.graphClicked ?
-                        (<element.display data={this.state[element.dataId]}
-                            width={500} height={250}
-                            ref={(ref) => { this["canvas" + element.dataId] = ref }} />)
-                        : (<element.display data={this.state[element.dataId]}
-                            width={1000} height={500} options={{ maintainAspectRatio: false }}
-                            ref={(ref) => { this["canvas" + element.dataId] = ref }} />)
-                    }
-                </div>))}
-        </div>
-        )
-    }
-
+    //                 {!this.state.graphClicked ?
+    //                     (<element.display data={this.state[element.dataId]} redraw
+    //                         width={500} height={250}
+    //                         ref={(ref) => { this["canvas" + element.dataId] = ref }} />)
+    //                     : (<element.display data={this.state[element.dataId]} redraw
+    //                         width={1000} height={500} options={{ maintainAspectRatio: false }}
+    //                         ref={(ref) => { this["canvas" + element.dataId] = ref }} />)
+    //                 }
+    //             </div>))}
+    //     </div>
+    //     )
+    // }
+    //{ amountPaid: 0, amountEarned: 0, balance: 0, time: 0 }
     render() {
-        console.log(`[Dashboard] [App-js-render] will render. State :`)
-        console.log("[Dashboard]" + this.state)
+        console.log(`[Dashboard] will render. State :`)
+        console.log(this.state)
         return (
             <div className='Dashboard'>
-                {this.renderGrid(this.makeToDisplay())}
+                <div className="flex-container">
+                    <div className="flex-item" key={"priceData"} ref={"priceData"}>
+                        <h2 > Negotiated Price </h2>
+                        <label> in (c/kWh) for each hour</label>
+                        <Line data={this.state["priceData"]} redraw
+                            width={500} height={250}
+                            ref={(ref) => { this["canvas" + "priceData"] = ref }} />
+                    </div>
+                    <div className="flex-item" key={"pricePaid"} ref={"pricePaid"}>
+                        <h2 > Global Financial Balance </h2>
+                        <div
+                            width={500} height={250}
+                            ref={(ref) => { this["canvas" + "pricePaid"] = ref }}>
+                            Financial balance = {this.state.pricePaid.balance} <br />
+                            Money earned = {this.state.pricePaid.amountEarned} <br />
+                            Money paid = {this.state.pricePaid.amountPaid} <br />
+                            At time =  {this.state.pricePaid.time} <br />
+                        </div>
+                    </div>
+                    <div className="flex-item" key={"lastNegotiation"} ref={"lastNegotiation"}>
+                        <h2 > Last negotiation result </h2>
+                        <div
+                            style={{ backgroundColor: (this.state.lastNegotiation.quantity > 0) ? "red" : "green" }}
+                            width={500} height={250}
+                            ref={(ref) => { this["canvas" + "lastNegotiation"] = ref }}>
+                            Financial balance = {this.state.lastNegotiation.financialBalance} <br />
+                            Price = {this.state.lastNegotiation.price} <br />
+                            Quantity = {this.state.lastNegotiation.quantity} <br />
+                            To retailer : {this.state.lastNegotiation.retailerId} <br />
+                            At time =  {this.state.lastNegotiation.time} <br />
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }

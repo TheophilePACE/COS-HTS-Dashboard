@@ -4,12 +4,12 @@ const Price = require('../model/priceModel')
 const priceApi = (router) =>
     router.route('/prices')
         .get((req, res) => {
-            Price.find(req.body.options).then((err, prices) => {
-                if (err) {
-                    res.send(err)
-                }
+            Price.find(req.body.options).then((prices) => {
                 // responds with a json object of our database prices.
                 res.json(prices)
+            }).catch(err => {
+                console.log(err)
+                res.send(err)
             })
         })
         .post((req, res) => {
@@ -24,11 +24,14 @@ const priceApi = (router) =>
                 price.retailerId = req.body.retailerId
                 price.price = req.body.price
                 price.time = req.body.time
+                price.quantity = req.body.quantity
 
                 price.save((err) => {
                     if (err) {
                         res.send(err)
                     }
+                    console.log("[API PRICE] post succeded" + price)
+
                     res.json({ message: 'price successfully added!' })
                 })
             }

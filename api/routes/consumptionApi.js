@@ -7,20 +7,13 @@ const consumptionApi = (router) =>
         // retrieve all conumsption from the database
         .get((req, res) => {
             // looks at our Comment Schema
-
-
-            console.log(req.url)
             const researchParam = { time: req.query.time, applianceId: req.query.applianceId, quantity: req.query.quantity }
             Object.keys(researchParam).forEach(key => { if (typeof researchParam[key] === 'undefined') delete researchParam[key] })
             Consumption.find(researchParam)
-                .then((err, consumptions) => {
-                    if (err) {
-                        res.send(err)
-                    } else {
-                        // responds with a json object of our database consumptions.
-                        res.json(consumptions)
-                    }
-                }).catch(err => {
+                .then((consumptions) => {
+                    res.send(consumptions)
+                })
+                .catch(err => {
                     console.log("[COnsumption API-get] problem with the request:")
                     console.log(err)
                     res.send(err)
@@ -46,7 +39,10 @@ const consumptionApi = (router) =>
                     if (err) {
                         res.send(err)
                     }
-                    res.json({ message: 'consumption successfully added!' })
+                    else {
+                        console.log("[API CONSUMPTION] post succeded" + consumption)
+                        res.json({ message: 'consumption successfully added!' })
+                    }
                 })
             }
         })
@@ -75,20 +71,19 @@ const consumptionApi = (router) =>
                 res.json({ message: 'Body empty  or not complete', body: req.body })
                 console.log('[consumptionApi-Put]insertion impossible body uncomplete :' + JSON.stringify(req.body))
             } else {
+                console.log("Consumptions put")
+                console.log(req.url)
+                console.log(req.body)
+
                 // body parser lets us use the req.body
                 Consumption.findOneAndUpdate({
-                    applianceId: req.body.applianceId, quantity: req.body.quantity
-                }, { $set: { time: req.body.time } }, {
+                    applianceId: req.body.applianceId, time: req.body.time
+                }, { $set: { quantity: req.body.quantity } }, {
                         new: true
                     })
-                    .then((err) => {
-                        console.log(err)
-                        console.log(doc)
-                        if (err) {
-                            res.send({ sucses: false, serr: JSON.stringify(err), context: req.body })
-                        } else {
-                            res.json({ success: true, err: null, context: req.body })
-                        }
+                    .then((result) => {
+                        console.log("[COnsumptionAPI] put succedded " + result)
+                        res.json({ success: true, err: null, result })
                     })
                     .catch(err => {
                         console.log('[consumptionApi - put] error' + err)

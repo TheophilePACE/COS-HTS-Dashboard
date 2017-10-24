@@ -21,7 +21,7 @@ const settingsApi = (router, pathToSettings, pathToDefaultSettings) =>
         router.route('/settings')
             .get((req, res) => {
                 readFile(pathToSettings, 'utf8')
-                    .then(settingsFileString => res.json({ settings: JSON.parse(settingsFileString), succes: true }))
+                    .then(settingsFileString => res.json(JSON.parse(settingsFileString)))
                     .catch(err => {
                         console.log("[settingsApi get] Error reading settings")
                         console.log(err)
