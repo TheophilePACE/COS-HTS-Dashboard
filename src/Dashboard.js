@@ -14,7 +14,8 @@ class Dashboard extends Component {
             getConsumption: props.getConsumption, sizeOfGraphs: props.sizeOfGraphs,
             getPrice: props.getPrice, API_URL: props.API_URL,
             pricePaid: {}, lastNegotiation: {},
-            priceBuyingData: {}, priceSellingData: {}, formatedConsumptions: []
+            priceBuyingData: {}, priceSellingData: {}, formatedConsumptions: [],
+            energyConsumptions: {}, energyBalance: {}
         }
 
     }
@@ -56,7 +57,6 @@ class Dashboard extends Component {
     }
     formatLastNegotiation(priceDataset) {
         const lastNegotiation = priceDataset[priceDataset.length - 1]
-        console.log(lastNegotiation)
         if (!lastNegotiation)
             return {
                 quantity: 0,
@@ -89,20 +89,46 @@ class Dashboard extends Component {
         },
             [])
     }
-    // formatConsumption(data) {
-    //     return data.reduce((accumulator, cv) => {
-    //         let applianceDataset = accumulator.datasets.find(e => e.label === cv.consumptionType)
-    //         applianceDataset.data.push(cv.consumption)
-    //         if(!accumulator.labels.fin(cv.time)) //new time
-    //             accumulator.labels.push(cv.time)
-    //         return accumulator
-    //     },
-    //     { labels: [], datasets: [
-    //         { label: 'base_load', data: [], borderColor: 'rgb(255, 132, 132)' },
-    //         { label: 'fluctuating_load', data: [], borderColor: 'rgb(255, 61, 61)' },
-    //         { label: 'total consumption', data: [], borderColor: 'red' }
-    // ] })
-    // }
+    formatEnergyConsumption(data) {
+        return data.reduce((accumulator, cv) => {
+            let base_load = cv.consumptions.find(e => e.consumptionType === "base_load") || { quantity: 0 }
+            let fluctuating_load = cv.consumptions.find(e => e.consumptionType === "fluctuating_load") || { quantity: 0 }
+
+            accumulator.labels.push(cv.time)
+            accumulator.datasets[0].data.push(base_load.quantity)
+            accumulator.datasets[1].data.push(fluctuating_load.quantity)
+            accumulator.datasets[2].data.push(fluctuating_load.quantity + base_load.quantity)
+            return accumulator
+        },
+            {
+                labels: [], datasets: [
+                    { label: 'base_load', data: [], borderColor: 'rgb(255, 132, 132)' },
+                    { label: 'fluctuating_load', data: [], borderColor: 'rgb(255, 100, 100)' },
+                    { label: 'total consumption', data: [], borderColor: 'red' }
+                ]
+            })
+    }
+    formatEnergyBalance(data) {
+        return data.reduce((accumulator, cv) => {
+            let base_load = cv.consumptions.find(e => e.consumptionType === "base_load") || { quantity: 0 }
+            let fluctuating_load = cv.consumptions.find(e => e.consumptionType === "fluctuating_load") || { quantity: 0 }
+            let PV_generation = cv.consumptions.find(e => e.consumptionType === "PV_generation") || { quantity: 0 }
+
+            accumulator.labels.push(cv.time)
+            accumulator.datasets[0].data.push(PV_generation.quantity)
+            accumulator.datasets[1].data.push(fluctuating_load.quantity + base_load.quantity)
+            accumulator.datasets[2].data.push(fluctuating_load.quantity + base_load.quantity + PV_generation.quantity)
+
+            return accumulator
+        },
+            {
+                labels: [], datasets: [
+                    { label: 'PV_generation', data: [], borderColor: 'green' },
+                    { label: 'total consumption', data: [], borderColor: 'red' },
+                    { label: 'balance', data: [], borderColor: 'grey' },
+                ]
+            })
+    }
 
 
     formatAll(fetchResult) {
@@ -114,7 +140,9 @@ class Dashboard extends Component {
         const pricePaid = this.formatPricePaid(retailersData)
         const lastNegotiation = this.formatLastNegotiation(retailersData)
         const formatedConsumptions = this.formatConsumption(appliancesData)
-        this.setState({ priceBuyingData, priceSellingData, pricePaid, lastNegotiation, formatedConsumptions })
+        const energyConsumptions = this.formatEnergyConsumption(formatedConsumptions)
+        const energyBalance = this.formatEnergyBalance(formatedConsumptions)
+        this.setState({ priceBuyingData, priceSellingData, pricePaid, lastNegotiation, formatedConsumptions, energyConsumptions, energyBalance })
     }
     componentWillMount() {
         this.fetchAll().then((allData) => {
@@ -178,6 +206,20 @@ class Dashboard extends Component {
                             To retailer : <b>{this.state.lastNegotiation.retailerId}</b> <br />
                             At time =  <b>{this.state.lastNegotiation.time}</b> <br />
                         </div>
+                    </div>
+                    <div className="flex-item" key={"energyConsumptions"} ref={"energyConsumptions"}>
+                        <h2 > Consumption of energy </h2>
+                        <label> in kWh for each hour</label>
+                        <Line data={this.state["energyConsumptions"]} redraw
+                            width={500} height={250}
+                            ref={(ref) => { this["canvas" + "energyConsumptions"] = ref }} />
+                    </div>
+                    <div className="flex-item" key={"energyBalance"} ref={"energyBalance"}>
+                        <h2 > Balance of energy in the home system </h2>
+                        <label> in kWh for each hour</label>
+                        <Line data={this.state["energyBalance"]} redraw
+                            width={500} height={250}
+                            ref={(ref) => { this["canvas" + "energyBalance"] = ref }} />
                     </div>
                 </div>
             </div>
