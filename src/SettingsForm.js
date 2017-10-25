@@ -44,7 +44,7 @@ class SettingsForm extends Component {
                             value={this.state.yearlyConsumption}
                             helperText="Yearly consumption of the house."
                             margin="normal"
-                            onChange={(e) => this.setState({ yearlyConsumption: Number.parseInt(e.target.value, 10) })}
+                            onChange={(e) => this.setState({ yearlyConsumption: Number.parseFloat(e.target.value, 10) })}
 
                             name="yearlyConsumption"
                             fullWidth
@@ -149,7 +149,7 @@ class SettingsForm extends Component {
                             value={this.state.generationCapacity}
                             helperText="Electricity generation capacity of the house."
                             margin="normal"
-                            onChange={(e) => this.setState({ generationCapacity: Number.parseInt(e.target.value, 10) })}
+                            onChange={(e) => this.setState({ generationCapacity: Number.parseFloat(e.target.value, 10) })}
                             name="generationCapacity"
                             fullWidth
                         />

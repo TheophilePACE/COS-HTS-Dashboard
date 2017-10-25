@@ -171,9 +171,9 @@ class Dashboard extends Component {
                         <label>in AUD </label>
                         <div style={tile}
                             ref={(ref) => { this["canvaspricePaid"] = ref }}>
-                            Financial balance = <b> {String(Math.round(this.state.pricePaid.balance) / 100)}</b> <br />
-                            Money earned = <b>{String(Math.round(this.state.pricePaid.amountEarned) / 100)}</b> <br />
-                            Money paid = <b>{String(Math.round(this.state.pricePaid.amountPaid) / 100)}</b> <br />
+                            <label style={{ color: (this.state.pricePaid.balance > 0) ? "red" : "green" }}>Financial balance = <b> {String(Math.round(this.state.pricePaid.balance) / 100)}</b> <br /></label>
+                            <label style={{ color: "green" }}>Money earned = <b>{String(Math.round(this.state.pricePaid.amountEarned) / 100)}</b> <br /></label>
+                            <label style={{ color: "red" }}>Money paid = <b>{String(Math.round(this.state.pricePaid.amountPaid) / 100)}</b> <br /></label>
                             At time =  <b>{String(this.state.pricePaid.time)}</b> <br />
                         </div>
                     </div>
@@ -183,11 +183,11 @@ class Dashboard extends Component {
                             backgroundColor: (this.state.lastNegotiation.quantity > 0) ? "red" : "green"
                         }}
                             ref={(ref) => { this["canvaslastNegotiation"] = ref }}>
-                            Financial balance = <b>{String(Math.round(this.state.lastNegotiation.financialBalance) / 100)}</b> <i>   in AUD </i> <br />
-                            Price = <b>{String(this.state.lastNegotiation.price)}</b> <i>  in c/kWh</i> <br />
-                            Quantity = <b>{String(this.state.lastNegotiation.quantity)}</b> <i>   in kWh</i><br />
-                            To retailer : <b>{String(this.state.lastNegotiation.retailerId)}</b> <br />
-                            At time =  <b>{String(this.state.lastNegotiation.time)}</b> <br />
+                            <label>Financial balance = <b>{String(Math.round(this.state.lastNegotiation.financialBalance) / 100)}</b> <i>   in AUD </i> </label><br />
+                            <label>Price = <b>{String(this.state.lastNegotiation.price)}</b> <i>  in c/kWh</i> </label><br />
+                            <label>Quantity = <b>{String(this.state.lastNegotiation.quantity)}</b> <i>   in kWh</i></label><br />
+                            <label>To retailer : <b>{String(this.state.lastNegotiation.retailerId)}</b> </label><br />
+                            <label>At time =  <b>{String(this.state.lastNegotiation.time)}</b> </label><br />
                         </div>
                     </div>
                     <div style={tile} className="flex-item" key={"priceBuyingData"} ref={"priceBuyingData"}>
