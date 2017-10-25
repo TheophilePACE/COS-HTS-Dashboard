@@ -4,10 +4,12 @@ const priceApi = (router, API_URI) =>
     router.route('/resetDB')
         .get((req, res) => {
             console.log("[RESETDB] MONGO WILL BE RESET. RECEIVED : ")
-            console.log(JSON.stringify(req.body))
+            console.log(JSON.stringify(req.query))
             const bodyReq = {
                 method: 'delete',
-                body: JSON.stringify({ all: true }),
+                body: !req.query.from ?
+                    (JSON.stringify({ all: true }))
+                    : JSON.stringify({ time: { $lt: req.query.from } }),
                 headers: { 'Content-Type': 'application/json' }
             }
             const p1 = fetch(API_URI + "/api/prices", bodyReq)

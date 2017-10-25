@@ -35,9 +35,13 @@ class App extends Component {
     this.setState({ APISettings })
   }
 
-  resetDB() {
-    fetch(API_URL + "/resetDB")
-      .then(res => res.json()).then(json => console.log(json))
+  resetDB(resetBefore) {
+    let resetPromise
+    if (resetBefore === null)
+      resetPromise = fetch(API_URL + "/resetDB")
+    else
+      resetPromise = fetch(API_URL + "/resetDB?from=" + resetBefore)
+    resetPromise.then(res => res.json()).then(json => console.log(json))
       .catch(err => console.log(err))
   }
 
@@ -58,11 +62,11 @@ class App extends Component {
               getConsumption={getConsumption}
               getPrice={getPrice}
               API_URL={API_URL}
-              CYCLE_TIME={this.state.APISettings.CYCLE_TIME} />
+              CYCLE_TIME={this.state.APISettings.CYCLE_TIME}
+              resetDB={this.resetDB} />
             <SettingsForm
               updateSettings={(settings) => { this.updateSettings(settings) }}
-              settings={this.state.APISettings}
-              resetDB={this.resetDB} />
+              settings={this.state.APISettings} />
           </div>
         ) : (
             <div>

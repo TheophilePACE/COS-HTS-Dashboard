@@ -50,13 +50,13 @@ const consumptionApi = (router) =>
         .delete((req, res) => {
             let rm
             if (req.body.all) {
-                rm = Consumption.remove({})
+                rm = Consumption.deleteMany({})
             } else {
                 const body = {}
-                body.applianceId = req.body.applianceId
-                body.quantity = req.body.quantity
-                body.time = req.body.time
-                rm = Consumption.remove(body)
+                if (req.body.applianceId !== undefined) body.applianceId = req.body.retailerId
+                if (req.body.quantity !== undefined) body.quantity = req.body.price
+                if (req.body.time !== undefined) body.time = req.body.time
+                rm = Consumption.deleteMany(body)
             }
             rm.then(result => {
                 console.log('[delete consumption]: ' + JSON.stringify(req.body) + ' ==> ' + result)

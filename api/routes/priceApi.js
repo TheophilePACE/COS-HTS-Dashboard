@@ -42,10 +42,10 @@ const priceApi = (router) =>
                 rm = Price.remove({})
             } else {
                 const body = {}
-                body.retailerId = req.body.retailerId
-                body.price = req.body.price
-                body.time = req.body.time
-                rm = Price.remove(body)
+                if (req.body.retailerId !== undefined) body.retailerId = req.body.retailerId
+                if (req.body.price !== undefined) body.price = req.body.price
+                if (req.body.time !== undefined) body.time = req.body.time
+                rm = Price.deleteMany(body)
             }
             rm.then(result => {
                 console.log('[delete Price]: ' + JSON.stringify(req.body) + ' ==> ' + result)
