@@ -93,7 +93,7 @@ class SettingsForm extends Component {
                                 value={this.state.minSellingPrice}
                                 helperText="Minimum price for selling electricity"
                                 margin="normal"
-                                onChange={(e) => this.handleInputChange(e)}
+                                onChange={(e) => this.setState({ minSellingPrice: Number.parseFloat(e.target.value, 10) })}
                                 name="minSellingPrice"
                                 fullWidth
                             />
@@ -109,7 +109,7 @@ class SettingsForm extends Component {
                                 value={this.state.maxBuyingPrice}
                                 helperText="Maximum price for buying electricity."
                                 margin="normal"
-                                onChange={(e) => this.handleInputChange(e)}
+                                onChange={(e) => this.setState({ maxBuyingPrice: Number.parseFloat(e.target.value, 10) })}
                                 name="maxBuyingPrice"
                                 fullWidth
                             />
