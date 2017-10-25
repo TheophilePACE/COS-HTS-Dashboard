@@ -1,13 +1,18 @@
 version: "3"
 services:
-  web:
+  gui:
     build: ./
     image: "theophile/cos-api-gui"
-    user: "node"
     ports:
       - '3000:3000'
+    command: "npm run startGui"
+
+  api:
+    build: ./
+    image: "theophile/cos-api-gui"
+    ports:
       - '3001:3001'
-    command: "npm run start-dev"
+    command: "npm run startApi "
   mongodb:
     image: mongo
     ports:
