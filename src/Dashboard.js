@@ -18,7 +18,7 @@ class Dashboard extends Component {
             pricePaid: {}, lastNegotiation: {},
             priceBuyingData: {}, priceSellingData: {}, formatedConsumptions: [],
             energyConsumptions: {}, energyBalance: {},
-            viewSince: 0, viewSinceField: 0, resetBefore: null
+            viewSince: 0, viewSinceField: 0
 
         }
 
@@ -153,7 +153,7 @@ class Dashboard extends Component {
             this.formatAll(allData)
         })
             .then(() => {
-                setTimeout(() => this.componentWillMount(), Math.max(1000, this.state.CYCLE_TIME / 2))
+                setTimeout(() => this.componentWillMount(), 2000)
             })
     }
 
@@ -244,23 +244,8 @@ class Dashboard extends Component {
                     </div>
                     <div className="flex-item" key={"resetSystem"} ref={"resetSystem"} style={tile}>
                         <h2>reset the system</h2>
-                        <p>Note: if you don't precise the resetBefore parameter below, all the data will be deleted</p>
-                        <TextField
-                            type="number"
-                            label="resetBefore"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            placeholder={String(this.state.resetBefore)}
-                            value={this.state.resetBefore}
-                            helperText="Time to reset from."
-                            margin="normal"
-                            onChange={(e) => this.setState({ resetBefore: Number.parseInt(e.target.value, 10) })}
-                            name="resetBefore"
-                            fullWidth
-                        />
                         <button style={{ display: 'inline-block', width: '10vw', height: '7vh', backgroundColor: 'red', border: '3px solid rgb(135, 4, 0)', margin: '2' }}
-                            onClick={() => this.props.resetDB(this.state.resetBefore)}>RESET THE SYSTEM </button>
+                            onClick={() => this.props.resetDB()}>RESET THE SYSTEM </button>
 
                     </div>
                 </div>

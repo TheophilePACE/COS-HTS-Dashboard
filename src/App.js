@@ -35,13 +35,9 @@ class App extends Component {
     this.setState({ APISettings })
   }
 
-  resetDB(resetBefore) {
-    let resetPromise
-    if (resetBefore === null)
-      resetPromise = fetch(API_URL + "/resetDB")
-    else
-      resetPromise = fetch(API_URL + "/resetDB?from=" + resetBefore)
-    resetPromise.then(res => res.json()).then(json => console.log(json))
+  resetDB() {
+    fetch(API_URL + "/resetDB")
+      .then(res => res.json()).then(json => console.log(json))
       .catch(err => console.log(err))
   }
 

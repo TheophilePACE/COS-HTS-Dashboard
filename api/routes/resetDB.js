@@ -7,9 +7,7 @@ const priceApi = (router, API_URI) =>
             console.log(JSON.stringify(req.query))
             const bodyReq = {
                 method: 'delete',
-                body: !req.query.from ?
-                    (JSON.stringify({ all: true }))
-                    : JSON.stringify({ time: { $lt: req.query.from } }),
+                body: JSON.stringify({ all: true }),
                 headers: { 'Content-Type': 'application/json' }
             }
             const p1 = fetch(API_URI + "/api/prices", bodyReq)
