@@ -19,3 +19,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#eslint
+.eslint*
+package-lock.json
+
+#specific to project
+settings.json
