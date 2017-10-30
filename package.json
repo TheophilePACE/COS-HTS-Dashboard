@@ -25,13 +25,13 @@
   },
   "bin": "api/server.js",
   "scripts": {
-    "start-dev": "nf start -p 3000",
+    "start-dev": "URL_DB=mongodb://localhost:27017 nf start -p 3000",
     "startGui": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --watchAll",
     "simpleTest": "jest",
     "eject": "react-scripts eject",
-    "startApi": "node api/server.js"
+    "startApi": "URL_DB=mongodb://mongodb:27017 node api/server.js"
   },
   "nodemonConfig": {
     "ignore": [
