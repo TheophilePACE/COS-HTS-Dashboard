@@ -32,6 +32,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }))
 app.use(bodyParser.json(), (err, req, res, next) => {
     console.log("error : ")
+    //FIXME WTF
     console.log(err, req, res, next)
     if (err) {
         console.log(err)

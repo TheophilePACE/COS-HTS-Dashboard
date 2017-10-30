@@ -51,7 +51,7 @@ const settingsApi = (router, pathToSettings, pathToDefaultSettings) =>
                                 if (err)
                                     res.send({ success: false, err })
                                 else
-                                    res.json({ success: true, settings: newSettingsString })
+                                    res.json({ success: true, settings: JSON.parse(newSettingsString) })
                             })
                     })
 
