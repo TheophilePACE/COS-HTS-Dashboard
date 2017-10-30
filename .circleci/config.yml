@@ -25,7 +25,12 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
+      #deploy
+      - run: npm run start-dev
       # run tests!
       - run: npm test
-
+general:
+  branches:
+    only:
+      - master # list of branches to build
+      - /feature-.*/ # or regexes
