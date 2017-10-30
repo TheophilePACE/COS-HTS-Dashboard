@@ -32,5 +32,4 @@ jobs:
 general:
   branches:
     only:
-      - master # list of branches to build
-      - /feature-.*/ # or regexes
+      - CI
