@@ -4,8 +4,10 @@ jobs:
     docker:
       # primary image
       - image: circleci/node:8.6.0
+        name: api-container
       #db for the system
       - image: circleci/mongo:3.4.4
+        name: mongodb
     working_directory: ~/repo
 
     steps:
