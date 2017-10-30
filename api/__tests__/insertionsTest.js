@@ -17,7 +17,7 @@ const insert = (body, url) => {
         })
 }
 
-describe('Test of prices and consumptions API, delete and insert', () => {
+describe('[INTEGRATION TEST] Test of RESETDB, prices and consumptions API, delete and insert', () => {
     it('Empty the API', () => {
         return fetch(API_URL + '/resetDB').then(resp => resp.json()).then(deleteJson => {
             expect(deleteJson.success).toEqual(true)
@@ -110,4 +110,47 @@ describe('Test of prices and consumptions API, delete and insert', () => {
                 expect(apiResp.body).toEqual({})
             })
     })
+})
+
+describe('[INTEGRATION TEST] Test of settings API, ', () => {
+    let defaultJson = {}
+    it('Check if default settings contains what they are supposed to', () => {
+        return fetch(API_URL + '/settings').then(resp => resp.json()).then(settingsJson => {
+            expect(settingsJson).toHaveProperty("API_URL")
+            expect(settingsJson).toHaveProperty("JADE_PORT")
+            expect(settingsJson).toHaveProperty("CYCLE_TIME")
+            expect(settingsJson).toHaveProperty("yearlyConsumption")
+            expect(settingsJson).toHaveProperty("consumptionGearing")
+            expect(settingsJson).toHaveProperty("generationCapacity")
+            expect(settingsJson).toHaveProperty("roundsLimit")
+            expect(settingsJson).toHaveProperty("maxBuyingPrice")
+            expect(settingsJson).toHaveProperty("minSellingPrice")
+        })
+    })
+    it('send a valid JSON', async () => {
+        const testSettings = { test: "test", myTest: "test", fulltest: 1234, boolbool: true }
+        return insert(testSettings, API_URL + '/settings')
+            .then(settingsJson => {
+                expect(settingsJson.success).toEqual(true)
+                expect(settingsJson.settings).toHaveProperty("API_URL")
+                expect(settingsJson.settings).toHaveProperty("JADE_PORT")
+                expect(settingsJson.settings).toHaveProperty("CYCLE_TIME")
+                expect(settingsJson.settings).toHaveProperty("yearlyConsumption")
+                expect(settingsJson.settings).toHaveProperty("consumptionGearing")
+                expect(settingsJson.settings).toHaveProperty("generationCapacity")
+                expect(settingsJson.settings).toHaveProperty("roundsLimit")
+                expect(settingsJson.settings).toHaveProperty("maxBuyingPrice")
+                expect(settingsJson.settings).toHaveProperty("minSellingPrice")
+                Object.keys(testSettings).forEach((objectKey) => {
+                    expect(settingsJson.settings).toHaveProperty(objectKey)
+                    expect(settingsJson.settings[objectKey]).toEqual(testSettings[objectKey])
+                })
+            })
+    })
+})
+it('send a malformed Json', async () => {
+    return insert("{'malformed':tre}", API_URL + '/settings')
+        .then(respJson => {
+            expect(respJson.success).toEqual(false)
+        })
 })
