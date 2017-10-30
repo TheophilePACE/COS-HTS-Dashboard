@@ -27,7 +27,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       #deploy
-      - run: npm run startApi & sleep 3 && npm run simpleTest
+      - run: npm run startApi & sleep 3 && API_URL=http://localhost:3001/api npm run test
       # run tests!
 general:
   branches:
