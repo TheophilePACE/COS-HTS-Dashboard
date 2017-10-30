@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.use(bodyParser.json(), (err, req, res, next) => {
     if (err) {
         console.log("[BODY PARSER] ERROR parsing the request")
-        console.log("[BODY PARSER] " + err.message + "name : " + error.name)
+        console.log("[BODY PARSER] " + err.message + "name : " + err.name)
         res.status(500).send({ success: false, message: 'malformed json' })
     }
 })
