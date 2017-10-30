@@ -13,7 +13,7 @@ const readDefaultSettings = (pathToSettings, pathToDefaultSettings) =>
         })
         .then(defaultSettingsJSON => writeFile(pathToSettings, defaultSettingsJSON, 'utf8'))
         .catch(err => {
-            console.log("unable to start settings API")
+            console.log("[settingsApi] error reading defaultsettings: " + err.message + "error stack :" + err.stack)
             throw new Error(err)
         })
 const settingsApi = (router, pathToSettings, pathToDefaultSettings) =>
@@ -23,20 +23,11 @@ const settingsApi = (router, pathToSettings, pathToDefaultSettings) =>
                 readFile(pathToSettings, 'utf8')
                     .then(settingsFileString => res.json(JSON.parse(settingsFileString)))
                     .catch(err => {
-                        console.log("[settingsApi get] Error reading settings")
-                        console.log(err)
+                        console.log("[settingsApi get] Error reading settings" + err.name + err.message + err.stack)
                         res.send({ err, success: false })
                     })
             })
             .post((req, res) => {
-                try {
-                    JSON.parse(JSON.stringify(req.body))
-                } catch (err) {
-                    console.log("[settingsApi post] NOt a json. Seetings won't be updated")
-                    console.log(req.body)
-                    res.send({ err, success: false })
-                    return
-                }
                 readFile(pathToSettings, 'utf8')
                     .then(settingsFile => JSON.parse(settingsFile))
                     .then(settingsFileJSON => {
@@ -54,11 +45,9 @@ const settingsApi = (router, pathToSettings, pathToDefaultSettings) =>
                                     res.json({ success: true, settings: JSON.parse(newSettingsString) })
                             })
                     })
-
                     .catch(err => {
-                        console.log("[settingsApi post] Error updating settings")
-                        console.log(err)
-                        res.send(err)
+                        console.log("[settingsApi post] Error settingsApi" + err.name + err.message + err.stack)
+                        res.send({ success: false, err })
                     })
             })
     )

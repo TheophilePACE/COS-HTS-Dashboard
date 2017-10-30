@@ -153,6 +153,7 @@ describe('[INTEGRATION TEST] Test of settings API, ', () => {
             .then(respJson => {
                 expect(respJson.success).toEqual(false)
                 expect(respJson.message).toEqual('malformed json')
+                expect(respJson.err.name).toEqual('SyntaxError')
             })
     })
 })

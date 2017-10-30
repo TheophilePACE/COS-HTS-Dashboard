@@ -14,21 +14,20 @@ const priceApi = (router, API_URI) =>
                 .then(res => res.json())
                 .then(json => console.log(json))
                 .catch(err => {
-                    console.error('fetch error : ' + err)
+                    console.log('[RESETDB] fetch error : ' + err.name + err.message + err.stack)
                 })
             const p2 = fetch(API_URI + "/api/consumptions", bodyReq)
                 .then(res => res.json())
                 .then(json => console.log(json))
                 .catch(err => {
-                    console.error('fetch error : ' + err)
+                    console.log('[RESETDB] fetch error : ' + err.name + err.message + err.stack)
                 })
             Promise.all([p1, p2]).then(() => {
                 console.log('[RESETDB] Mongo reset successfully')
                 res.json({ success: true })
             }).catch(err => {
-                console.log('[RESETDB] error in reseting mongo : ')
-                console.log(err)
-                res.json(err)
+                console.log('[RESETDB] error : ' + err.name + err.message + err.stack)
+                res.json({ success: false, err })
             })
         })
 

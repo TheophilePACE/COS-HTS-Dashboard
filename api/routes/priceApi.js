@@ -28,7 +28,6 @@ const priceApi = (router) =>
                     if (err) {
                         res.send(err)
                     }
-                    // console.log("[API PRICE] post succeded" + price)
                     res.json({ success: true })
                 })
             }
