@@ -23,7 +23,6 @@ const consumptionApi = require('./routes/consumptionApi')
 const priceApi = require('./routes/priceApi')
 const settingsApi = require('./routes/settingsApi')
 const resetDBApi = require('./routes/resetDB')
-const { testInsertions } = require('./testInsertions')
 
 // now we should configure the API to use bodyParser and look for
 // JSON data in the request body
@@ -31,7 +30,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }))
-app.use(bodyParser.json())
+app.use(bodyParser.json(), (err, req, res, next) => {
+    console.log("error : ")
+    console.log(err, req, res, next)
+    if (err) {
+        console.log(err)
+        console.log("[BODY PARSER] ERROR parsing the request")
+        res.status(500).send({ success: false, message: 'malformed json' })
+    }
+})
 // To prevent errors from Cross Origin Resource Sharing, we will set
 // our headers to allow CORS with middleware like so:
 app.use((req, res, next) => {

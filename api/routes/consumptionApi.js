@@ -26,7 +26,7 @@ const consumptionApi = (router) =>
                     && req.body.hasOwnProperty('quantity')
                     && req.body.hasOwnProperty('time'))
             ) {
-                res.json({ message: 'Body empty  or not complete', body: req.body })
+                res.json({ success: false, message: 'Body empty  or not complete', body: req.body })
                 console.log('[consumptionApi-Post]insertion impossible body uncomplete :' + JSON.stringify(req.body))
             } else {
                 const consumption = new Consumption()
@@ -41,8 +41,8 @@ const consumptionApi = (router) =>
                         res.send(err)
                     }
                     else {
-                        console.log("[API CONSUMPTION] post succeded" + consumption)
-                        res.json({ message: 'consumption successfully added!' })
+                        // console.log("[API CONSUMPTION] post succeded" + consumption)
+                        res.json({ success: true })
                     }
                 })
             }
