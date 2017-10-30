@@ -29,7 +29,7 @@
     "startGui": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest",
-    "test-dev": "API_URL=http://localhost:3001/api jest",
+    "test-dev": "API_URL=http://localhost:3001/api jest --watch",
     "eject": "react-scripts eject",
     "startApi": "URL_DB=mongodb://mongodb:27017 node api/server.js"
   },
@@ -41,6 +41,13 @@
       "*.json",
       "node_modules/*",
       "src/*"
+    ]
+  },
+  "jest": {
+    "watchPathIgnorePatterns": [
+      "/*.json",
+      "node_modules/",
+      "build/"
     ]
   }
 }

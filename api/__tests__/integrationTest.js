@@ -23,17 +23,17 @@ describe('[INTEGRATION TEST] Test of RESETDB, prices and consumptions API, delet
             expect(deleteJson.success).toEqual(true)
         })
     })
-    it('verify if the prices db is empty', async () => {
+    it('verify if the prices db is empty', () => {
         return fetch(API_URL + '/prices').then(apiResp => apiResp.json()).then(apiResp => {
             expect(apiResp.length).toEqual(0)
         })
     })
-    it('verify if the consumptions db is empty', async () => {
+    it('verify if the consumptions db is empty', () => {
         return fetch(API_URL + '/consumptions').then(apiResp => apiResp.json()).then(apiResp => {
             expect(apiResp.length).toEqual(0)
         })
     })
-    it('insertion of prices', async () => {
+    it('insertion of prices', () => {
         const promisesArray = fakePrices.map(fakeP => insert(fakeP, API_URL + '/prices'))
         return Promise.all(promisesArray).then(result => {
             result.forEach(value => {
@@ -41,7 +41,7 @@ describe('[INTEGRATION TEST] Test of RESETDB, prices and consumptions API, delet
             })
         })
     })
-    it('insertion of consumptions', async () => {
+    it('insertion of consumptions', () => {
         const promisesArray = fakeConsumptions.map(fakeP => insert(fakeP, API_URL + '/consumptions'))
         return Promise.all(promisesArray).then(result => {
             result.forEach(value => {
@@ -49,12 +49,12 @@ describe('[INTEGRATION TEST] Test of RESETDB, prices and consumptions API, delet
             })
         })
     })
-    it('check the number of  prices in the  db', async () => {
+    it('check the number of  prices in the  db', () => {
         return fetch(API_URL + '/prices').then(apiResp => apiResp.json()).then(apiResp => {
             expect(apiResp.length).toEqual(fakePrices.length)
         })
     })
-    it('check the number of  consumptions in the  db', async () => {
+    it('check the number of  consumptions in the  db', () => {
         return fetch(API_URL + '/consumptions').then(apiResp => apiResp.json()).then(apiResp => {
             expect(apiResp.length).toEqual(fakeConsumptions.length)
         })
@@ -102,7 +102,7 @@ describe('[INTEGRATION TEST] Test of RESETDB, prices and consumptions API, delet
             method: 'post',
             headers: { 'Content-Type': 'application/json' }
         })
-            .then(async res => {
+            .then(res => {
                 return res.json()
             }).then(apiResp => {
                 expect(apiResp.success).toEqual(false)
@@ -127,7 +127,8 @@ describe('[INTEGRATION TEST] Test of settings API, ', () => {
             expect(settingsJson).toHaveProperty("minSellingPrice")
         })
     })
-    it('send a valid JSON', async () => {
+
+    it('send a valid JSON', () => {
         const testSettings = { test: "test", myTest: "test", fulltest: 1234, boolbool: true }
         return insert(testSettings, API_URL + '/settings')
             .then(settingsJson => {
@@ -148,7 +149,7 @@ describe('[INTEGRATION TEST] Test of settings API, ', () => {
             })
     })
 
-    it('send a malformed Json', async () => {
+    it('send a malformed Json', () => {
         return insert("{'malformed':tre}", API_URL + '/settings')
             .then(respJson => {
                 expect(respJson.success).toEqual(false)
