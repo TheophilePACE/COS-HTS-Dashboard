@@ -19,16 +19,15 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: npm install
+      - run: npm install --only=production
 
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       #deploy
-      - run: npm run start-dev
+      - run: npm run startApi & sleep 3 && npm run simpleTest
       # run tests!
-      - run: npm test
 general:
   branches:
     only:

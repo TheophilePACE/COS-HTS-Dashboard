@@ -29,8 +29,9 @@
     "startGui": "react-scripts start",
     "build": "react-scripts build",
     "test": "jest --watchAll",
+    "simpleTest": "jest",
     "eject": "react-scripts eject",
-    "startApi": "nodemon api/server.js"
+    "startApi": "node api/server.js"
   },
   "nodemonConfig": {
     "ignore": [
