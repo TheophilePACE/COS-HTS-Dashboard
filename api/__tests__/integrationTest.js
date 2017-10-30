@@ -147,10 +147,12 @@ describe('[INTEGRATION TEST] Test of settings API, ', () => {
                 })
             })
     })
-})
-it('send a malformed Json', async () => {
-    return insert("{'malformed':tre}", API_URL + '/settings')
-        .then(respJson => {
-            expect(respJson.success).toEqual(false)
-        })
+
+    it('send a malformed Json', async () => {
+        return insert("{'malformed':tre}", API_URL + '/settings')
+            .then(respJson => {
+                expect(respJson.success).toEqual(false)
+                expect(respJson.message).toEqual('malformed json')
+            })
+    })
 })
