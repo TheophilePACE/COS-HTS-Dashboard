@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import './App.css'
 import { getConsumption } from './apiWrapper/consumptionApi'
 import { getPrice } from './apiWrapper/priceApi'
-import ENV from './ENV'
 import Dashboard from "./Dashboard"
 import SettingsForm from "./SettingsForm"
 import { sendSettings, getSettings } from "./apiWrapper/settingsApi"
