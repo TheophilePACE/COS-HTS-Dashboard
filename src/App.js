@@ -7,7 +7,9 @@ import Dashboard from "./Dashboard"
 import SettingsForm from "./SettingsForm"
 import { sendSettings, getSettings } from "./apiWrapper/settingsApi"
 
-const API_URL = ENV.API_URL
+const API_URL = process.env.API_URL
+if (!API_URL)
+  throw new Error("API URL IS NOT DEFINED")
 
 class App extends Component {
   constructor(props) {
