@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise
 const connection = (url) =>
     mongoose.connect(url, { useMongoClient: true })
         .then(dbConn => {
-            console.log('MONGOOSE CONNECTED')
+            console.log('[dbConnection] MONGOOSE CONNECTED')
             return dbConn
         }
         )

@@ -5,7 +5,6 @@ const priceApi = (router) =>
     router.route('/prices')
         .get((req, res) => {
             Price.find(req.body.options).then((prices) => {
-                // responds with a json object of our database prices.
                 res.json(prices)
             }).catch(err => {
                 console.log(err)
@@ -16,11 +15,10 @@ const priceApi = (router) =>
             if (!(req.body.hasOwnProperty('retailerId')
                 && req.body.hasOwnProperty('price')
                 && req.body.hasOwnProperty('time'))) {
-                res.json({ message: 'Body empty  or not complete', body: req.body })
+                res.json({ success: false, message: 'Body empty  or not complete', body: req.body })
                 console.log('[priceApi-Post]insertion impossible body uncomplete :' + JSON.stringify(req.body))
             } else {
                 const price = new Price()
-                // body parser lets us use the req.body
                 price.retailerId = req.body.retailerId
                 price.price = req.body.price
                 price.time = req.body.time
@@ -30,9 +28,7 @@ const priceApi = (router) =>
                     if (err) {
                         res.send(err)
                     }
-                    console.log("[API PRICE] post succeded" + price)
-
-                    res.json({ message: 'price successfully added!' })
+                    res.json({ success: true })
                 })
             }
         })

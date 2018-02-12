@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Line } from 'react-chartjs-2'
-import hash from 'md5'
 import './Dashboard.css'
 import { defaults } from 'react-chartjs-2';
 import TextField from 'material-ui/TextField';
@@ -157,14 +156,6 @@ class Dashboard extends Component {
             })
     }
 
-    makeColor(string) {
-        const nameHash = hash(string)
-        const red = parseInt(('' + nameHash).substring(0, 2), 16)
-        const green = parseInt(('' + nameHash).substring(2, 4), 16)
-        const blue = parseInt(('' + nameHash).substring(4, 6), 16)
-
-        return `rgb(${red},${green},${blue})`
-    }
     render() {
         return (
             <div className='Dashboard'>
