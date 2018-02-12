@@ -3,7 +3,7 @@ const fetch = require('node-fetch')
 
 const { fakePrices, fakeConsumptions } = require('../testAssets/fakeData')
 
-const API_URL = process.env.API_URL || (() => { throw new Error("no api url") })()
+const API_URL = process.env.API_URL || (() => { throw new Error("no api url at all") })()
 const insert = (body, url) => {
     const bodyReq = {
         method: 'post',
