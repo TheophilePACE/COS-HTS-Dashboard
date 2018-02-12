@@ -6,6 +6,7 @@ import Dashboard from "./Dashboard"
 import SettingsForm from "./SettingsForm"
 import { sendSettings, getSettings } from "./apiWrapper/settingsApi"
 
+
 console.log("Coucou c'est la CI")
 const API_URL = process.env.API_URL || "http://localhost:3001/api"
 if (!API_URL)

@@ -23,7 +23,6 @@ const consumptionApi = require('./routes/consumptionApi')
 const priceApi = require('./routes/priceApi')
 const settingsApi = require('./routes/settingsApi')
 const resetDBApi = require('./routes/resetDB')
-const { testInsertions } = require('./testInsertions')
 
 // now we should configure the API to use bodyParser and look for
 // JSON data in the request body
@@ -31,19 +30,23 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }))
-app.use(bodyParser.json())
-// To prevent errors from Cross Origin Resource Sharing, we will set
-// our headers to allow CORS with middleware like so:
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Credentials', 'true')
-    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE')
-    res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers')
-    // and remove cacheing so we get the most recent comments
-    res.setHeader('Cache-Control', 'no-cache')
-    // allow us to use hasOwnProperty on req.body
-    Object.setPrototypeOf(req.body, {})
-    next()
+app.use(bodyParser.json(), (err, req, res, next) => {
+    if (err) {
+        console.log("[BODY PARSER] ERROR : " + err.name + " message: " + err.message)
+        res.status(500).send({ success: false, message: 'malformed json', err: { name: err.name, message: err.message } })
+        return
+    } else {
+        console.log(req.body)
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Credentials', 'true')
+        res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE')
+        res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers')
+        // and remove cacheing so we get the most recent comments
+        res.setHeader('Cache-Control', 'no-cache')
+        // allow us to use hasOwnProperty on req.body
+        Object.setPrototypeOf(req.body, {})
+        next()
+    }
 })
 // now we can set the route path & initialize the API
 router.get('/', (req, res) => {
@@ -69,11 +72,12 @@ function startServer() {
             })
             fetch(env.API_URL + ":" + env.API_PORT + "/api/resetDB")
                 .then(res => res.json()).then(json => console.log(json))
-                .catch(err => console.log(err))
+                .catch(err => console.log("[serverjs] error reseting DB : " + err.name + "  message: " + err.message + "  stack: " + err.stack)
+                )
         })
         .catch((err) => {
-            console.log(err)
-            console.log("NOT READY YET")
+            console.log("[serverjs] " + err.name + "  message: " + err.message + "  stack: " + err.stack)
+            console.log("[serverjs] NOT READY YET")
             setTimeout(startServer, 2000)
         })
 }
